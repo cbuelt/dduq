@@ -27,5 +27,3 @@ The code is described in the corresponding folders:
 | `Pangu-Weather` | Creating perturbed forecasts with the Pangu-Weather model. |
 | `plots` | Generating the results plots. |
 | `utils` | Utility functions. |
-
-## License
