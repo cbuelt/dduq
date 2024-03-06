@@ -1,4 +1,4 @@
-# Data-driven uncertainty quantification
+# Uncertainty quantification for data-driven weather models
 
 This repository provides Python code accompanying the paper
 > Uncertainty quantification for data-driven weather models
