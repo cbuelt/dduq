@@ -23,3 +23,16 @@ The code is described in the corresponding folders:
 | `Pangu-Weather` | Creating perturbed forecasts with the Pangu-Weather model. |
 | `plots` | Generating the results plots. |
 | `utils` | Utility functions. |
+
+
+## Cite
+```bibtex
+@misc{bülte2024uncertainty,
+      title={Uncertainty quantification for data-driven weather models}, 
+      author={Christopher Bülte and Nina Horat and Julian Quinting and Sebastian Lerch},
+      year={2024},
+      eprint={2403.13458},
+      archivePrefix={arXiv},
+      primaryClass={physics.ao-ph}
+}
+```
