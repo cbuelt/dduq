@@ -16,7 +16,7 @@ if __name__ == '__main__':
     mean, std = get_normalization()
 
     # Set outputpath and filename
-    output_path = ".."
+    output_path = "../results/pangu/"
     filename = "pangu_ifsp_crps.h5"
     n_ics, length, n_var, lat_range, lon_range = get_shapes(year)
     # Create output file

@@ -18,17 +18,18 @@ import importlib
 import sys
 import os
 sys.path.insert(1, os.path.join(sys.path[0], '../../..'))
-from utils import load_prediction, load_truth
+from utils.utils import load_prediction, load_truth
 
 
 # Load all data
-pred_2018 = load_prediction(year = 2018, ensemble = False)
-pred_2019 = load_prediction(year = 2019, ensemble = False)
-pred_2020 = load_prediction(year = 2020, ensemble = False)
-pred_2021 = load_prediction(year = 2021, ensemble = False)
+data_path = "../mean/"
+pred_2018 = load_prediction(year = 2018, ensemble = False, path = data_path)
+pred_2019 = load_prediction(year = 2019, ensemble = False, path = data_path)
+pred_2020 = load_prediction(year = 2020, ensemble = False, path = data_path)
+pred_2021 = load_prediction(year = 2021, ensemble = False, path = data_path)
 
 truth_2018 = load_truth(year = 2018)
-truth_2019 = load_truth(year = 2019)
+truth_2019 = load_truth(year = 2019, ifs = True)
 truth_2020 = load_truth(year = 2020)
 truth_2021 = load_truth(year = 2021)
 
@@ -55,7 +56,7 @@ for var in range(len(var_names)):
 
     x_train = x_train.transpose(
     "ics", "lead_time", "lat", "lon"
-).expand_dims(dim = {"mean_std":1}, axis = 4)
+    ).expand_dims(dim = {"mean_std":1}, axis = 4)
 
     y_train = xr.concat([truth_2018.isel(var = var),
                          truth_2019.isel(var = var),

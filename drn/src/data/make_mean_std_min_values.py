@@ -18,8 +18,8 @@ def make_mean_std_min(dat_var_lead_all):
        #     std_min[var, lead_time] = (
      #           dat_var_lead_all[var][lead_time].isel(mean_std=1).min().values
        #     )
-    np.save(path + "mean_min.npy", mean_min)
-    #np.save("/pfs/work7/workspace/scratch/vt0186-fourcastnet/DRN/data/mean_std_min_values/denorm/std_min.npy", std_min)
+    np.save("../drn/data/mean_std_min_values/mean_min.npy", mean_min)
+    #np.save("../DRN/data/mean_std_min_values/denorm/std_min.npy", std_min)
     
 if __name__ == "__main__":
     # Call the main function

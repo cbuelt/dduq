@@ -15,9 +15,11 @@ if __name__ == "__main__":
     year = 2022
     idx = {"u10": 0, "v10": 1, "t2m": 2, "t850": 3, "z500": 4}
     n_ics, length, n_var, lat_range, lon_range = get_shapes(year)
-    output_path = ".."
+    output_path = "../results/ifs/"
     filename = "ensemble_spread.h5"
     methods = ["ECMWF IFS", "RNP", "IFSP", "RFP", "EasyUQ", "DRN"]
+
+    drn_path = "../drn/results/preds/"
 
     # Load truth and normalization
     mean, std = get_normalization()
@@ -88,7 +90,7 @@ if __name__ == "__main__":
                 # EasyUQ
                 truth = ground_truth.isel(lead_time = lead_time, var = var)
                 truth = truth * std[var] + mean[var]
-                eq = xr.open_dataset(output_path + "pangu_eq.h5").eq
+                eq = xr.open_dataset(output_path + "ifs_eq.h5").eq
                 eq_mean = eq[0,:,lead_time,var]
                 rmse = np.sqrt(np.power(truth - eq_mean.data, 2).mean(dim=["lat", "lon"]))
                 sd = eq[1,:,lead_time,var]
@@ -96,11 +98,11 @@ if __name__ == "__main__":
                 ens_spread[:,lead_time,4,1] = np.mean(sd, axis = (1,2))       
                 
                 # DRN
-                drn = load_drn_prediction(var, lead_time)
+                drn = load_drn_prediction(var, lead_time, path = drn_path)
                 # Get mean
                 drn_mean = drn[:,:,:,0]
                 rmse = np.sqrt(np.power(truth - drn_mean.data, 2).mean(dim=["lat", "lon"]))
-                sd = drn[:,:,:,1]
+                sd = np.abs(drn[:,:,:,1])
                 ens_spread[:,lead_time,5,0] = rmse
                 ens_spread[:,lead_time,5,1] = np.mean(sd, axis = (1,2))  
 

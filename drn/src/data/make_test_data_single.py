@@ -18,16 +18,16 @@ import importlib
 import sys
 import os
 sys.path.insert(1, os.path.join(sys.path[0], '../../..'))
-from utils import load_prediction, load_truth
+from utils.utils import load_prediction, load_truth
 
 
 # Load all data
-pred_2022 = load_prediction(year = 2022, ensemble = False)
+data_path = "../mean/"
+pred_2022 = load_prediction(year = 2022, ensemble = False, path = data_path)
 truth_2022 = load_truth(year = 2022)
 
 
 # Define Variable Names
-#dat_train_all = [dat_2018, dat_2019, dat_2020, dat_2021]
 var_names = ["u10", "v10", "t2m", "t850", "z500"]
 
 # Calc Mean and Std and create new test data file

@@ -17,7 +17,7 @@ from utils.utils import load_prediction, load_truth, get_normalization, get_shap
 
 
 def load_training_data(
-    years: list, step: int, var: int, normalize: bool = False
+    years: list, step: int, var: int, normalize: bool = False, path: str = ""
 ) -> xr.DataArray:
     """Loads the training data for a list of years, lead time and variable.
     Args:
@@ -30,7 +30,7 @@ def load_training_data(
     """
     training_data = xr.concat(
         [
-            load_prediction(year, ensemble=False).isel(var=var, lead_time=step)
+            load_prediction(year, ensemble=False, path = path).isel(var=var, lead_time=step)
             for year in years
         ],
         dim="ics",
@@ -42,7 +42,7 @@ def load_training_data(
 
 
 def load_training_truth(
-    years: list, step: int, var: int, normalize: bool = False
+    years: list, step: int, var: int, normalize: bool = False, ifs:bool = False,
 ) -> xr.DataArray:
     """Loads the training target for a list of years, lead time and variable.
 
@@ -56,7 +56,7 @@ def load_training_truth(
         xr.DataArray: Training target.
     """
     training_truth = xr.concat(
-        [load_truth(year).isel(var=var, lead_time=step) for year in years], dim="ics"
+        [load_truth(year, ifs = ifs).isel(var=var, lead_time=step) for year in years], dim="ics"
     )
     if normalize:
         mean, std = get_normalization()
@@ -118,6 +118,7 @@ def collect_result(result: tuple) -> None:
 
 if __name__ == "__main__":
     # Parameters
+    ifs = True # For filtering wrong values in ifs forecast
     years = [2018, 2019, 2020, 2021]
     mean, std = get_normalization()
     n_ics, length, n_var, lat_range, lon_range = get_shapes(year = 2022)
@@ -131,12 +132,13 @@ if __name__ == "__main__":
     n_proc = len(os.sched_getaffinity(0))
 
     # Load truth and evaluation data
+    data_path = "../mean/"
     truth = load_truth(year = 2022)
-    evaluation_data = load_prediction(year = 2022, ensemble=False)
+    evaluation_data = load_prediction(year = 2022, ensemble=False, path = data_path)
 
     # Create file
-    output_path = ".."
-    filename = "eq.h5"
+    output_path = "../results/ifs/"
+    filename = "ifs_eq.h5"
     f = h5py.File(output_path + filename, "a")
     try:
         crps_eq = f["eq"]
@@ -156,8 +158,8 @@ if __name__ == "__main__":
             t1 = time.time()
 
             # Create train and test data
-            x_train = load_training_data(years, step, var, normalize=False)
-            y_train = load_training_truth(years, step, var, normalize=True)
+            x_train = load_training_data(years, step, var, normalize=False, path = data_path)
+            y_train = load_training_truth(years, step, var, normalize=True, ifs = True)
 
             # Validation data
             y_val = truth.isel(lead_time=step, var=var) * std[var] + mean[var]

@@ -20,21 +20,12 @@ def load_data_all_train_proc_denorm(chunks=None):
     dat_train_t2m = xr.open_dataset(path + "t2m_train_denorm.h5", chunks=chunks)
     dat_train_t850 = xr.open_dataset(path + "t850_train_denorm.h5", chunks=chunks)
     dat_train_z500 = xr.open_dataset(path + "z500_train_denorm.h5", chunks=chunks)
-  #  dat_train_ws10 = xr.open_dataset(path + "ws10_train_denorm.h5", chunks=chunks_ws10).rename_dims({
-  #      "phony_dim_0": "forecast_date",
-  #      "phony_dim_1": "lead_time",
-  #      "phony_dim_2": "lat",
-  #      "phony_dim_3": "lon",
-  #      "phony_dim_4": "mean_std",
-  #  })
-    
     dat_train_all = [
         dat_train_u10,
         dat_train_v10,
         dat_train_t2m,
         dat_train_t850,
         dat_train_z500,
-  #      dat_train_ws10
     ]
 
     return dat_train_all
@@ -119,13 +110,6 @@ def load_data_all_test_proc_denorm(chunks=None):
     dat_test_t2m = xr.open_dataset(path + "t2m_test_denorm.h5", chunks=chunks)
     dat_test_t850 = xr.open_dataset(path + "t850_test_denorm.h5", chunks=chunks)
     dat_test_z500 = xr.open_dataset(path + "z500_test_denorm.h5", chunks=chunks)
- #   dat_test_ws10 = xr.open_dataset(path + "ws10_test_denorm.h5", chunks=chunks).rename_dims({
- #       "phony_dim_0": "forecast_date",
- #       "phony_dim_1": "lead_time",
- #       "phony_dim_2": "lat",
- #       "phony_dim_3": "lon",
- #       "phony_dim_4": "mean_std",
- #   })
     
     dat_test_all = [
         dat_test_u10,
@@ -133,7 +117,6 @@ def load_data_all_test_proc_denorm(chunks=None):
         dat_test_t2m,
         dat_test_t850,
         dat_test_z500,
- #       dat_test_ws10
     ]
 
     return dat_test_all
@@ -198,7 +181,7 @@ def load_max_mean_std_values_denorm():
     load all max mean and std values to scale the denormed data with
     '''
     mean_max = np.load("../drn/data/mean_std_max_values/mean_max.npy")
-    #std_max = np.load("/Data/Delong_BA_Data/mean_std_max_values/denorm/std_max.npy")
+    #std_max = np.load("../mean_std_max_values/denorm/std_max.npy")
     return mean_max#, std_max
 
 def load_min_mean_std_values_denorm():
@@ -206,7 +189,7 @@ def load_min_mean_std_values_denorm():
     load all min mean and std values to scale the denormed data with
     '''
     mean_min = np.load("../drn/data/mean_std_min_values/mean_min.npy")
-    #std_min = np.load("/pfs/work7/workspace/scratch/vt0186-fourcastnet/DRN/data/mean_std_min_values/denorm/std_min.npy")
+    #std_min = np.load("../mean_std_min_values/denorm/std_min.npy")
     return mean_min#, std_min
 
 

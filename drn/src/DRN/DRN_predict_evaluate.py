@@ -19,13 +19,13 @@ import matplotlib.pyplot as plt
 
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../../../')
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../../')
 
 # My Methods
 from src.utils.CRPS import *  # CRPS metrics
 from src.utils.data_split import *  # Splitting data into X and y
 from src.utils.drn_make_X_array import *  # Import make train array functions (make_X_array)
-from src.models.DRN.DRN_model import *  # DRN implementation
+from src.DRN.DRN_model import *  # DRN implementation
 import data.processed.load_data_processed as ldp  # Load processed data normed
 import data.processed.load_data_processed_denormed as ldpd  # Load processed data denormed
 
@@ -90,7 +90,9 @@ def DRN_predict_evaluate(var_num, lead_time):
     np.save(model_filename, DRN_preds)
     
     # DRN Model scores
-    DRN_scores = crps(mu=DRN_preds[:, 0], sigma=DRN_preds[:, 1], y=t2m_y_test)
+    mu = DRN_preds[:, 0]
+    sigma = DRN_preds[:, 1] + 1e-6 # Add for numerical stability
+    DRN_scores = crps(mu=mu, sigma=sigma, y=t2m_y_test)
     # Reshape the CRPS scores and compute the mean along the first axis
     DRN_scores = DRN_scores.reshape(dat_y_test_lead_all_denorm[var_num][lead_time].shape)#.mean(axis=0)
     # Save the average CRPS score over all days for 120 x 130 grid

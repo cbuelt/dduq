@@ -110,7 +110,7 @@ def get_ensembles(
 
 
 def load_training_data(
-    years: list, step: int, var: int, normalize: bool = False
+    years: list, step: int, var: int, normalize: bool = False, path: str = "", 
 ) -> xr.DataArray:
     """Loads the training data for the EasyUQ method for a list of years, lead time and variable.
     Args:
@@ -123,7 +123,7 @@ def load_training_data(
     """
     training_data = xr.concat(
         [
-            load_prediction(year, ensemble=False).isel(var=var, lead_time=step)
+            load_prediction(year, ensemble=False, path = path).isel(var=var, lead_time=step)
             for year in years
         ],
         dim="ics",
@@ -135,7 +135,7 @@ def load_training_data(
 
 
 def load_training_truth(
-    years: list, step: int, var: int, normalize: bool = False
+    years: list, step: int, var: int, normalize: bool = False, ifs:bool = False
 ) -> xr.DataArray:
     """Loads the training target for the EasyUQ method for a list of years, lead time and variable.
 
@@ -149,7 +149,7 @@ def load_training_truth(
         xr.DataArray: Training target.
     """
     training_truth = xr.concat(
-        [load_truth(year).isel(var=var, lead_time=step) for year in years], dim="ics"
+        [load_truth(year, ifs = ifs).isel(var=var, lead_time=step) for year in years], dim="ics"
     )
     if normalize:
         mean, std = get_normalization()
@@ -165,7 +165,10 @@ def get_easyuq(
     lat_subset: np.ndarray,
     lon_subset: np.ndarray,
     ground_truth: xr.DataArray,
-    output_file
+    output_file,
+    path = "../Pangu/predictions/det/",
+    ifs = False,    
+    file_idx = 0,
 ) -> None:
     """ Calculates the PIT for the EasyUQ forecast.
 
@@ -178,24 +181,26 @@ def get_easyuq(
         lon_subset (np.ndarray): Longitude of chosen points.
         ground_truth (xr.DataArray): Ground truth data.
         output_file: File to save results to.
-        year (int, optional): Forecast year. Defaults to 2022.
+        path (str, optional): Path to predictions. Defaults to "../Pangu/predictions/det/".
+        ifs (bool, optional): Whether to use IFS data. Defaults to False.
+        file_idx (int, optional): Positional index of file. Defaults to 0.
     """
     # Get normalization constants
     mean, std = get_normalization()
     # Parameters
     training_years = [2018, 2019, 2020, 2021]
     # Load evaluation data
-    evaluation_data = load_prediction(2022, ensemble=False, name="rfp")
+    evaluation_data = load_prediction(2022, ensemble=False, path = path)
 
     # Iterate through gridpoints
     for l in range(n_points):
         for t, lead_time in enumerate(lead_times):
             # Create train and test data
             x_train = load_training_data(
-                training_years, lead_time, var, normalize=False
+                training_years, lead_time, var, normalize=False, path = path
             ).isel(lat=lat_subset[l], lon=lon_subset[l])
             y_train = load_training_truth(
-                training_years, lead_time, var, normalize=True
+                training_years, lead_time, var, normalize=True, ifs = ifs
             ).isel(lat=lat_subset[l], lon=lon_subset[l])
 
             # Evaluation data
@@ -216,7 +221,7 @@ def get_easyuq(
             preds_test = fitted_idr.predict(
                 pd.DataFrame({"fore": x_val.to_numpy()}, columns=["fore"])
             )
-            output_file[:, l, t, 4] = preds_test.pit(y_val.to_numpy())[0:n_ics]
+            output_file[:, l, t, file_idx] = preds_test.pit(y_val.to_numpy())[0:n_ics]
 
 
 def get_drn(
@@ -227,7 +232,8 @@ def get_drn(
     lat_subset: np.ndarray,
     lon_subset: np.ndarray,
     ground_truth: xr.DataArray,
-    output_file
+    output_file,
+    file_idx = 0,
 ) -> None:
     """ Calculates the PIT for the DRN forecast.
 
@@ -240,7 +246,7 @@ def get_drn(
         lon_subset (np.ndarray): Longitude of chosen points.
         ground_truth (xr.DataArray): Ground truth data.
         output_file: File to save results to.
-        year (int, optional): Forecast year. Defaults to 2022.
+        file_idx (int, optional): Positional index of file. Defaults to 0.
     """
     # Get normalization constants
     mean, std = get_normalization()
@@ -260,23 +266,29 @@ def get_drn(
             drn_pred = drn[:, lat_subset[l], lon_subset[l]]
             # Extract mu and sigma
             drn_pred[:, 1] = np.abs(drn_pred[:, 1])
-            output_file[:, l, t, 5] = scipy.stats.norm(
+            output_file[:, l, t, file_idx] = scipy.stats.norm(
                 loc=drn_pred[:, 0], scale=drn_pred[:, 1]
             ).cdf(truth)[0:n_ics]
 
 
 if __name__ == "__main__":
     # Define parameters and paths
+    np.random.seed(42)
     year = 2022
     idx = {"u10": 0, "v10": 1, "t2m": 2, "t850": 3, "z500": 4}
     n_ics, length, n_var, lat_range, lon_range = get_shapes(year)
     n_points = 10
-    output_path = ".."
+    output_path = "../results/ifs/"
     filename = "pit.h5"
     # Names of methods
-    methods = ["ECMWF IFS", "RNP", "IFSP", "RFP", "EasyUQ", "DRN"]
+    methods =  ["ECMWF IFS", "RNP", "IFSP", "RFP", "EasyUQ", "DRN"]
     # Choose specific lead times
     lead_times = [4, 12, 28]
+
+    # Path to prediction files and flag for ifs forecast
+    eq_path = "../mean/"
+    drn_path = "../drn/results/preds/"
+    ifs = True
 
     # Load truth and normalization
     ground_truth = load_truth(year)
@@ -328,6 +340,9 @@ if __name__ == "__main__":
             lon_subset=lon_subset,
             ground_truth=ground_truth,
             output_file=pit,
+            path = eq_path,
+            ifs = ifs,
+            file_idx = 4,
         )
         get_drn(
             n_ics=n_ics,
@@ -338,6 +353,8 @@ if __name__ == "__main__":
             lon_subset=lon_subset,
             ground_truth=ground_truth,
             output_file=pit,
+            path = drn_path,
+            file_idx = 5,
         )
 
         # Measure time

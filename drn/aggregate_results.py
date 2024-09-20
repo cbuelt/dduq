@@ -1,7 +1,6 @@
 # Purpose: Aggregate the output of the drn model and calculate the crps
 # Authors: Christopher Bülte
 
-
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -18,8 +17,9 @@ if __name__ == "__main__":
     idx = {"u10": 0, "v10": 1, "t2m": 2, "t850": 3, "z500": 4}
     
     # Create file
-    output_path = ""
-    filename = "pangu_drn.h5"
+    output_path = "../results/ifs/"
+    drn_path = "../drn/results/preds/"
+    filename = "ifs_drn.h5"
     f = h5py.File(output_path + filename, "a")
     try:
         drn_res = f["drn"]
@@ -33,11 +33,11 @@ if __name__ == "__main__":
     # Aggregate results
     for var in range(n_var):
         for step in range(1,length):
-            drn = load_drn_prediction(var = var, lead_time = step)
+            drn = load_drn_prediction(var = var, lead_time = step, path = drn_path)
             exp = drn[:,:,:,0]
             sd = drn[:,:,:,1]
             # Load score
-            score_path = f"../drn/data/scores/DRN_{list(idx.keys())[var]}_lead_time_{(step-1)}_scores.npy"
+            score_path = f"../drn/results/scores/DRN_{list(idx.keys())[var]}_lead_time_{(step-1)}_scores.npy"
             drn_score = np.load(score_path)
 
             # Write to file

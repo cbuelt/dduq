@@ -18,8 +18,8 @@ def make_mean_std_max(dat_var_lead_all):
           #  std_max[var, lead_time] = (
           #      dat_var_lead_all[var][lead_time].isel(mean_std=1).max().values
            # )
-    np.save(path + "mean_max.npy", mean_max)
-    #np.save("/pfs/work7/workspace/scratch/vt0186-fourcastnet/DRN/data/mean_std_max_values/denorm/std_max.npy", std_max)
+    np.save("../drn/data/mean_std_max_values/mean_max.npy", mean_max)
+    #np.save("../DRN/data/mean_std_max_values/denorm/std_max.npy", std_max)
     
 if __name__ == "__main__":
     # Call the main function

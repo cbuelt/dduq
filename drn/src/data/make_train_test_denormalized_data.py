@@ -69,8 +69,8 @@ if __name__ == "__main__":
     dat_train_proc_norm = ldp.load_data_all_train_proc_norm(chunks={"forecast_date": 10})
     dat_test_proc_norm = ldp.load_data_five_test_proc_norm(chunks={"forecast_date": 10})
     var_names = ["u10", "v10", "t2m", "t850", "z500"]
-    means = np.load("../data/stats_v0/global_means.npy").flatten()[[0, 1, 2, 5, 14]]
-    stds = np.load("../data/stats_v0/global_stds.npy").flatten()[[0, 1, 2, 5, 14]]
+    means = np.load("../FCN/stats_v0/global_means.npy").flatten()[[0, 1, 2, 5, 14]]
+    stds = np.load("../FCN/stats_v0/global_stds.npy").flatten()[[0, 1, 2, 5, 14]]
     # Create a pool of worker processes
     pool = mp.Pool(len(os.sched_getaffinity(0))-1)
 

@@ -10,7 +10,7 @@ import os
 
 
 def get_normalization(
-    path: str = "../stats/",
+    path: str = "../FCN/stats_v0/",
     vars: list = [0, 1, 2, 5, 14],
 ) -> tuple:
     """Loads normalizing constants for output variables from the specified path.
@@ -29,7 +29,8 @@ def get_normalization(
 
 def load_truth(
     year: int,
-    path: str = "..",
+    path: str = "../FCN/predictions/rnp/",
+    ifs = False, # IFS forecast for year 2019 needs one date removed
 ) -> xr.DataArray:
     """Loads the ERA5 ground truth for a given year.
 
@@ -63,6 +64,9 @@ def load_truth(
             )
             .truth
         )
+    if ifs == True and year == 2019:
+        index = np.append(np.arange(0,289), np.arange(290,357))
+        truth = truth.isel(ics = index)
     return truth
 
 
@@ -82,7 +86,7 @@ def get_shapes(year: int) -> tuple:
 
 def load_ifs_forecast(
     ics: int,
-    path: str = "..",
+    path: str = "../data/ecmwf_ics/",
 ) -> xr.DataArray:
     """Loads the IFS forecast for a given initial condition.
 
@@ -108,7 +112,7 @@ def load_ifs_forecast(
 
 def load_prediction(
     year: int,
-    path: str = "..",
+    path: str = "../Pangu/predictions/det/",
     ensemble: bool = True,
 ) -> xr.DataArray:
     """Loads the model prediction for a given year.
@@ -123,16 +127,16 @@ def load_prediction(
         xr.DataArray: Model prediction in the shape (ics, perturbations, lead_times, variables, latitude, longitude).
     """
     file = f"{year}.nc"
-    truth = xr.open_dataset(path + file).forecast
+    pred = xr.open_dataset(path + file).forecast
     if ensemble == False:
-        truth = truth.isel(pert=0)
-    return truth
+        pred = pred.isel(pert=0)
+    return pred
 
 
 def load_prediction_single(
     year: int,
     ics: int,
-    path: str = "..",
+    path: str = "../Pangu/predictions/",
     name: str = "rnp",
 ) -> xr.DataArray:
     """Loads a model prediction for a given year and specific initial condition.
@@ -160,7 +164,7 @@ def load_prediction_single(
 def load_drn_prediction(
     var: int,
     lead_time: int,
-    path: str = "..",
+    path: str = "../Pangu/predictions/drn/results/preds/",
 ) -> np.ndarray:
     """Load the DRN prediction for a given variable and lead time.
 

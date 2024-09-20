@@ -6,6 +6,7 @@ import h5py
 from datetime import datetime
 import sys
 import os
+import xarray as xr
 sys.path.insert(1, os.path.join(sys.path[0], ".."))
 from utils.utils import load_prediction_single, load_truth, get_normalization, get_shapes, load_drn_prediction, load_ifs_forecast
 
@@ -15,10 +16,13 @@ if __name__ == "__main__":
     year = 2022
     idx = {"u10": 0, "v10": 1, "t2m": 2, "t850": 3, "z500": 4}
     n_ics, length, n_var, lat_range, lon_range = get_shapes(year)
-    output_path = ".."
+    output_path = "../results/ifs/"
     filename = "bias.h5"
     methods = ["ECMWF IFS", "RNP", "IFSP", "RFP", "EasyUQ", "DRN"]
     lead_times = [4, 12, 28]
+
+    # Set paths
+    drn_path = "../drn/results/preds/"
 
     # Load truth and normalization
     ground_truth = load_truth(year)
@@ -48,7 +52,6 @@ if __name__ == "__main__":
                 shape=(len(methods), len(lead_times), lat_range, lon_range),
                 dtype=np.float32,
             )
-
 
         # Calculate bias for ensemble predictions
         for t, lead_time in enumerate(lead_times):
@@ -87,16 +90,17 @@ if __name__ == "__main__":
                         var=var).mean(dim = ["pert"])
                 bias[3, t] += (truth - rfp)/n_ics          
 
+
             # Calculate bias for EasyUQ
             truth = ground_truth.isel(lead_time = lead_time, var = var)
             truth = truth * std[var] + mean[var]
-            eq = xr.open_dataset(output_path + "pangu_eq.h5").eq
+            eq = xr.open_dataset(output_path + "ifs_eq.h5").eq
             eq_mean = eq[0,:,lead_time,var]
             bias[4,t] = (truth - eq_mean.data).mean(dim = ["ics"])   
         
             
             # Calculate bias for DRN
-            drn = load_drn_prediction(var, lead_time)
+            drn = load_drn_prediction(var, lead_time, path = drn_path)
             # Get mean
             drn_mean = drn[:,:,:,0]
             bias[5,t] = (truth - drn_mean.data).mean(dim = ["ics"])   

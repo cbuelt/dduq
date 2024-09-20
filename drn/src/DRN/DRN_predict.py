@@ -19,16 +19,13 @@ import matplotlib.pyplot as plt
 
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../../../')
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../../')
 
 # My Methods
 from src.utils.CRPS import *  # CRPS metrics
 from src.utils.data_split import *  # Splitting data into X and y
 from src.utils.drn_make_X_array import *  # Import make train array functions (make_X_array)
-from src.models.EMOS import *  # EMOS implementation
-from src.models.DRN.DRN_model import *  # DRN implementation
-from src.models.EMOS_global.EMOS_global_load_score import *  # Load EMOS_global_scores
-from src.models.EMOS_global.EMOS_global_load_model import *  # Load EMOS_global_models
+from src.DRN.DRN_model import *  # DRN implementation
 import data.raw.load_data_raw as ldr  # Load raw data
 import data.processed.load_data_processed as ldp  # Load processed data normed
 import data.processed.load_data_processed_denormed as ldpd  # Load processed data denormed
@@ -57,7 +54,7 @@ def DRN_predict_evaluate(var_num, lead_time):
     var_names = ["u10", "v10", "t2m", "t850", "z500"]
     
     # Load the trained model to use:
-    path = f'../drn/data/models/DRN/DRN_{var_names[var_num]}_lead_time_{lead_time}_denormed.h5'
+    path = f'../DRN/data/models/DRN/DRN_{var_names[var_num]}_lead_time_{lead_time}_denormed.h5'
     DRN_model = tf.keras.models.load_model(path, custom_objects={
                 "crps_cost_function": crps_cost_function,
                 "crps_cost_function_trunc": crps_cost_function_trunc,
@@ -82,7 +79,7 @@ def DRN_predict_evaluate(var_num, lead_time):
     DRN_preds = DRN_model.predict([drn_X_test_lead_array, drn_embedding_test_lead_array])
     
     # Save the predictions
-    model_filename = f"../drn/data/preds/DRN_preds/DRN_{var_names[var_num]}_lead_time_{lead_time}_preds.npy"
+    model_filename = f"../DRN/data/preds/DRN_preds/DRN_{var_names[var_num]}_lead_time_{lead_time}_preds.npy"
     np.save(model_filename, DRN_preds)
 
     

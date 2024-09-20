@@ -15,7 +15,7 @@ def load_data_all_train_proc_norm(chunks=None):
     dat_train_t2m = xr.open_dataset("../drn/data/train_test/t2m_train.h5", chunks=chunks)
     dat_train_t850 = xr.open_dataset("../drn/data/train_test/t850_train.h5", chunks=chunks)
     dat_train_z500 = xr.open_dataset("../drn/data/train_test/z500_train.h5", chunks=chunks)
-    #dat_train_ws10 = xr.open_dataset("/pfs/work7/workspace/scratch/vt0186-fourcastnet/Pangu/drn/data/Mean_ens_std/ws10_train.h5", chunks=chunks)
+    #dat_train_ws10 = xr.open_dataset("../drn/data/Mean_ens_std/ws10_train.h5", chunks=chunks)
     
     dat_train_all = [
         dat_train_u10,
