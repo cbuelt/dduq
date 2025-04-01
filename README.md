@@ -26,13 +26,13 @@ The code is described in the corresponding folders:
 
 ## Cite
 ```bibtex
-@misc{bülte2024uncertainty,
-      title={Uncertainty quantification for data-driven weather models}, 
-      author={Christopher Bülte and Nina Horat and Julian Quinting and Sebastian Lerch},
-      year={2024},
-      eprint={2403.13458},
-      archivePrefix={arXiv},
-      primaryClass={physics.ao-ph}
+@article{buelte24,
+  title = {Uncertainty quantification for data-driven weather models},
+  author = {Bülte, Christopher and Horat, Nina and Quinting, Julian and Lerch, Sebastian},
+  journal = {Artificial Intelligence for the Earth Systems},
+  year = {2025},
+  doi = {10.1175/AIES-D-24-0049.1},
+  url = {https://journals.ametsoc.org/view/journals/aies/aop/AIES-D-24-0049.1/AIES-D-24-0049.1.xml},
 }
 ```
 
