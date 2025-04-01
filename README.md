@@ -1,8 +1,7 @@
 # Uncertainty quantification for data-driven weather models
 
 This repository provides Python code accompanying the paper
-> Bülte, C., Horat, N., Quinting, J. and Lerch S. (2024). Uncertainty quantification for data-driven weather models
-> (preprint available at https://arxiv.org/abs/2403.13458)
+> Bülte, C., Horat, N., Quinting, J. and Lerch S. (2025). Uncertainty quantification for data-driven weather models. Artificial Intelligence for the Earth Systems. https://doi.org/10.1175/AIES-D-24-0049.1 (preprint version available at https://arxiv.org/abs/2403.13458).
      
 The code includes methods for producing ensemble forecasts using the PanguWeather model and different initial condition methods, as described in the paper. Furthermore, two post-processing approaches are implemented and can be used. In addition, code for evaluation of the different approaches is included.
 
